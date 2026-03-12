@@ -9,7 +9,9 @@
             --neon-pink: #ff00ff;
             --neon-blue: #00f2ff;
             --neon-purple: #bc13fe;
-            --text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px var(--neon-pink);
+            --neon-green: #0f0; /* Klassisches Matrix-Grün als Kontrast */
+            --bg-color: #000; /* Tiefschwarz für den Matrix-Effekt */
+            --text-shadow: 0 0 10px rgba(255, 255, 255, 0.9), 0 0 20px var(--neon-pink);
         }
 
         body, html {
@@ -18,12 +20,12 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            background-color: #050505;
-            color: white;
+            font-family: 'Courier New', Courier, monospace; /* Matrix-Schriftart */
+            background-color: var(--bg-color);
+            color: #fff;
         }
 
-        /* Hintergrund-Animationen */
+        /* Hintergrund-Canvas für den Matrix-Regen */
         #canvas {
             position: fixed;
             top: 0;
@@ -39,67 +41,92 @@
             height: 100vh;
             text-align: center;
             padding: 20px;
+            position: relative; /* Für Überlagerung */
+            z-index: 1; /* Über dem Canvas */
         }
 
         .active { display: flex; }
 
         h1 {
-            font-size: 2.5rem;
+            font-size: 3rem;
             text-shadow: var(--text-shadow);
             margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin: 10px 0;
+            max-width: 600px;
+            text-shadow: 0 0 5px #fff;
         }
 
         .timer {
-            font-size: 1.5rem;
+            font-size: 2rem;
             color: var(--neon-blue);
-            margin: 20px 0;
+            margin: 30px 0;
             font-weight: bold;
-            text-shadow: 0 0 10px var(--neon-blue);
+            text-shadow: 0 0 15px var(--neon-blue);
+            background: rgba(0,0,0,0.5); /* Bessere Lesbarkeit vor dem Regen */
+            padding: 10px 20px;
+            border-radius: 10px;
         }
 
         button {
-            margin-top: 30px;
-            padding: 15px 40px;
+            margin-top: 40px;
+            padding: 15px 50px;
             background: transparent;
-            border: 2px solid var(--neon-pink);
+            border: 3px solid var(--neon-pink);
             color: var(--neon-pink);
-            font-size: 1.2rem;
+            font-size: 1.3rem;
+            font-weight: bold;
             border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 0 15px var(--neon-pink);
-            transition: 0.3s;
+            box-shadow: 0 0 20px var(--neon-pink);
+            transition: 0.3s ease-in-out;
             text-transform: uppercase;
+            font-family: 'Segoe UI', sans-serif; /* Schönere Schrift für Button */
         }
 
         button:hover {
             background: var(--neon-pink);
             color: white;
+            box-shadow: 0 0 30px var(--neon-pink), 0 0 50px var(--neon-pink);
         }
 
         /* Seite 3: Tunnel-Effekt */
-        #page3 { background: black; }
+        #page3 { 
+            background: black; 
+            z-index: 10; /* Ganz oben, überdeckt alles */
+        }
         .tunnel {
-            width: 20px;
-            height: 20px;
+            width: 10px;
+            height: 10px;
             background: white;
             border-radius: 50%;
-            box-shadow: 0 0 50px 20px white;
-            animation: expand 5s forwards;
+            box-shadow: 0 0 60px 30px white;
+            animation: expandTunnel 5s forwards;
+            position: absolute;
         }
 
-        @keyframes expand {
-            0% { transform: scale(1); opacity: 0.2; }
-            100% { transform: scale(100); opacity: 1; }
+        @keyframes expandTunnel {
+            0% { transform: scale(1); opacity: 0.1; }
+            50% { opacity: 0.5; }
+            100% { transform: scale(200); opacity: 1; }
         }
 
         #final-text {
             display: none;
             position: absolute;
-            z-index: 10;
+            z-index: 11; /* Über dem Tunnel-Weiß */
             color: black; /* Text auf weißem Grund am Ende */
             font-weight: bold;
-            font-size: 1.8rem;
+            font-size: 2rem;
             max-width: 80%;
+            font-family: 'Segoe UI', sans-serif;
+            text-align: center;
         }
     </style>
 </head>
@@ -108,18 +135,18 @@
     <canvas id="canvas"></canvas>
 
     <div id="page1" class="page active">
-        <h1>Für meine wundervolle Frau</h1>
+        <h1 style="color: var(--neon-pink);">Für meine Ewigkeit</h1>
         <p>Seit dem 31.05.2019 gehen wir diesen Weg gemeinsam.</p>
-        <div id="marriage-timer" class="timer">Lade Zeit...</div>
+        <div id="marriage-timer" class="timer">Initialisiere Zeit-Matrix...</div>
         <p>Danke, dass ich die beste Frau der Welt an meiner Seite haben darf.</p>
-        <button onclick="nextPage(2)">Next Step</button>
+        <button onclick="nextPage(2)">Eintauchen</button>
     </div>
 
     <div id="page2" class="page">
         <h1 style="color: var(--neon-blue); text-shadow: 0 0 20px var(--neon-blue);">Unser ganzer Stolz</h1>
         <p>Am 27.10.2018 wurdest du geboren und bereicherst seither jede Sekunde unseres Lebens.</p>
         <p>Du bist das schönste Ergebnis unserer Liebe.</p>
-        <button onclick="nextPage(3)">Next Step</button>
+        <button onclick="nextPage(3)">Weitersehen</button>
     </div>
 
     <div id="page3" class="page">
@@ -130,12 +157,78 @@
     </div>
 
     <script>
+        // --- Canvas & Matrix Regen Setup ---
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
-        let symbols = [];
-        let currentMode = 'tulips'; // 'tulips' oder 'stars'
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
 
-        // Zeit-Rechner
+        let currentRainMode = 'tulips'; // 'tulips' oder 'stars'
+        let rainColor = '#ff00ff'; // Startfarbe (Neon Pink)
+
+        // Matrix Regen Parameter
+        const fontSize = 16;
+        let columns = Math.floor(width / fontSize);
+        let drops = [];
+
+        // Initialisiere die Tropfen-Positionen (alle starten oben)
+        function initDrops() {
+            columns = Math.floor(width / fontSize);
+            drops = [];
+            for (let x = 0; x < columns; x++) {
+                drops[x] = 1; 
+            }
+        }
+        initDrops();
+
+        window.onresize = () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            initDrops();
+        };
+
+        // Die Haupt-Animationsfunktion für den Regen
+        function drawMatrix() {
+            // Ein leicht transparenter schwarzer Hintergrund erzeugt den "Nachzieheffekt"
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, width, height);
+
+            // Setze die Farbe für die Symbole (Neon)
+            ctx.fillStyle = rainColor; 
+            ctx.font = fontSize + 'px Courier New';
+
+            // Loope über alle Spalten
+            for (let i = 0; i < drops.length; i++) {
+                // Wähle das Symbol basierend auf dem Modus
+                let text;
+                if (currentRainMode === 'tulips') {
+                    // Tulpen-Modus: Tulpen-Emoji oder zufällige romantische Zeichen
+                    text = Math.random() > 0.9 ? '🌷' : (Math.random() > 0.5 ? '❤' : '♥');
+                } else if (currentRainMode === 'stars') {
+                    // Sternen-Modus: Stern-Emoji oder kleine Punkte
+                    text = Math.random() > 0.8 ? '⭐' : (Math.random() > 0.5 ? '✨' : '*');
+                } else {
+                    text = ''; // Kein Regen auf Seite 3
+                }
+
+                // Zeichne das Symbol
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                // Wenn der Tropfen unten angekommen ist, setze ihn zufällig zurück nach oben
+                if (drops[i] * fontSize > height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+
+                // Bewege den Tropfen nach unten
+                drops[i]++;
+            }
+        }
+
+        // Starte die Regen-Animation (ca. 30 Bilder pro Sekunde)
+        let rainInterval = setInterval(drawMatrix, 33);
+
+
+        // --- Zeit-Rechner (unverändert) ---
         function updateTimer() {
             const startDate = new Date('2019-05-31T00:00:00');
             const now = new Date();
@@ -148,64 +241,34 @@
             const secs = Math.floor((diff % (1000 * 60)) / 1000);
 
             document.getElementById('marriage-timer').innerHTML = 
-                `${years} Jahre, ${days} Tage, ${hours}h ${mins}m ${secs}s`;
+                `${years} Jahre | ${days} Tage | ${hours}h ${mins}m ${secs}s`;
         }
         setInterval(updateTimer, 1000);
+        updateTimer(); // Sofort aufrufen
 
-        // Animationen (Tulpen/Sterne)
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.onresize = resize;
-        resize();
 
-        class Symbol {
-            constructor() {
-                this.init();
-            }
-            init() {
-                this.x = Math.random() * canvas.width;
-                this.y = -50;
-                this.speed = 1 + Math.random() * 3;
-                this.size = 15 + Math.random() * 20;
-                this.text = currentMode === 'tulips' ? '🌷' : '⭐';
-            }
-            draw() {
-                ctx.font = `${this.size}px serif`;
-                ctx.fillText(this.text, this.x, this.y);
-                this.y += this.speed;
-                if (this.y > canvas.height) this.init();
-            }
-        }
-
-        for(let i=0; i<30; i++) symbols.push(new Symbol());
-
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            symbols.forEach(s => s.draw());
-            requestAnimationFrame(animate);
-        }
-        animate();
-
-        // Seiten-Navigation
+        // --- Seiten-Navigation & Effekte ---
         function nextPage(num) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('page' + num).classList.add('active');
             
             if(num === 2) {
-                currentMode = 'stars';
-                symbols.forEach(s => s.text = '⭐');
+                // Wechsel zu Sternen-Regen und Neon-Blau
+                currentRainMode = 'stars';
+                rainColor = '#00f2ff'; 
             }
             
             if(num === 3) {
-                currentMode = 'none';
-                symbols = []; // Stop animation
+                // Stop Regen und starte Tunnel
+                currentRainMode = 'none';
+                clearInterval(rainInterval); // Stop die Matrix-Animation
+                
+                // Tunnel-Logik
                 setTimeout(() => {
                     document.getElementById('final-text').style.display = 'block';
                     setTimeout(() => {
                         window.close(); // Versucht das Fenster zu schließen
-                        alert("Die Liebe bleibt."); // Fallback falls Browser Schließen blockiert
+                        alert("Eure Liebe ist die stärkste Kraft."); // Fallback
                     }, 3000);
                 }, 5000);
             }
